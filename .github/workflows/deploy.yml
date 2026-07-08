@@ -1,0 +1,39 @@
+name: Jalur Otomatisasi Deploy ke RHEL
+
+# Alur kerja ini akan aktif SETIAP KALI ada kode yang di-push ke branch 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy-to-server:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. Ambil Kode Terbaru dari GitHub
+      uses: actions/checkout@v4
+
+    - name: 2. Eksekusi Perintah Jarak Jauh di Server RHEL via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: root
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Masuk ke folder ansible kita yang kemarin (atau folder proyekmu di RHEL)
+          cd /mnt/d/Devops/ansible || cd ~
+          
+          # Unduh kode index.html dan Dockerfile terbaru langsung dari GitHub ke server RHEL
+          # (Untuk praktik awal yang simpel, kita biarkan server RHEL melakukan build lokal)
+          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/index.html -o index.html
+          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/Dockerfile -o Dockerfile
+          
+          # Bangun ulang Docker Image di server RHEL
+          docker build -t web-cicd-app .
+          
+          # Hentikan dan hapus kontainer lama jika sedang berjalan
+          docker stop web-cicd-container || true
+          docker rm web-cicd-container || true
+          
+          # Jalankan kontainer baru dengan kode paling gres di port 8081
+          docker run -d --name web-cicd-container -p 8081:80 --restart always web-cicd-app
