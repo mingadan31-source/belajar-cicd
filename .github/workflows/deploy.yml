@@ -26,7 +26,8 @@ jobs:
           
           # Unduh kode index.html dan Dockerfile terbaru langsung dari GitHub ke server RHEL
           ## (Untuk praktik awal yang simpel, kita biarkan server RHEL melakukan build lokal)
-        run:  
+    - name: 2 Bangun dan Jalankan Kontainer Docker   
+      run:  
           curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/index.html -o index.html
           curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/Dockerfile -o Dockerfile
           
