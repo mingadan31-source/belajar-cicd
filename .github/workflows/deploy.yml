@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy-to-server:
-    runs-on: ubuntu-latest
-
+#    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    
     steps:
     - name: 1. Ambil Kode Terbaru dari GitHub
       uses: actions/checkout@v4
