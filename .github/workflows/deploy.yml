@@ -14,16 +14,12 @@ jobs:
 
     - name: 2. Bangun dan Jalankan Kontainer Docker
       run: |
-        # Unduh kode index.html dan Dockerfile terbaru langsung dari repositori
-        curl -sSL https://raw.githubusercontent/${{ github.repository }}/main/index.html -o index.html
-        curl -sSL https://raw.githubusercontent/${{ github.repository }}/main/Dockerfile -o Dockerfile
-        
-        # Bangun ulang Docker Image (Gunakan sudo jika user 'olop' belum masuk grup docker)
-        sudo docker build -t web-cicd-app .
+        # Menggunakan file yang sudah ditarik oleh aksi checkout di atas
+        docker build -t web-cicd-app .
         
         # Hentikan dan hapus kontainer lama jika sedang berjalan
-        sudo docker stop web-cicd-container || true
-        sudo docker rm web-cicd-container || true
+        docker stop web-cicd-container || true
+        docker rm web-cicd-container || true
         
         # Jalankan kontainer baru di port 8081
-        sudo docker run -d --name web-cicd-container -p 8081:80 --restart always web-cicd-app
+        docker run -d --name web-cicd-container -p 8081:80 --restart always web-cicd-app
